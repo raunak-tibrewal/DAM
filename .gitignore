@@ -1,0 +1,17 @@
+.idea
+.gradle
+*.log*
+*.iml
+*.patch
+*.iws
+*.ipr
+*.ids
+*jar
+lib
+classes
+target
+out
+stacktrace.log*
+*/plugins
+*/overlays/
+git-daemon-export-ok
