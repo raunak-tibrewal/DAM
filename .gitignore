@@ -1,10 +1,5 @@
 .idea
 /gradle
-settings.gradle
-local.properties
-gradle.properties
-/build
-gradlew
 *.bat
 *.log*
 *.iml
