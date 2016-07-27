@@ -4,7 +4,9 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Camera;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -18,6 +20,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -41,6 +44,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent photoCaptureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                File f = new File(Environment.getExternalStorageDirectory(), "pan_image.jpg");
+                photoCaptureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
                 photoCaptureIntent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY,1);
                 startActivityForResult(photoCaptureIntent, requestCode);
             }
@@ -51,14 +56,36 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(this.requestCode == requestCode && resultCode == RESULT_OK){
-            Bitmap bitmap = (Bitmap)data.getExtras().get("data");
+            File f = new File(Environment.getExternalStorageDirectory().toString());
+            for (File tempFile : f.listFiles()) {
+                if ("pan_image.jpg".equals(tempFile.getName())) {
+                    f = tempFile;
+                    break;
+                }
+            }
 
-            String partFilename = currentDateFormat();
-            storeCameraPhotoInSDCard(bitmap, partFilename);
+//            Bitmap bitmap = (Bitmap)data.getExtras().get("data");
+//
+//            String partFilename = currentDateFormat();
+//            storeCameraPhotoInSDCard(bitmap, partFilename);
+//
+//            // display the image from SD Card to ImageView Control
+//            String storeFilename = "photo_" + partFilename + ".jpg";
+            final File file = f;
 
-            // display the image from SD Card to ImageView Control
-            String storeFilename = "photo_" + partFilename + ".jpg";
-            final File file = getImageFileFromSDCard(storeFilename);
+            try {
+                Bitmap bitmap;
+                BitmapFactory.Options bitmapOptions = new BitmapFactory.Options();
+
+                bitmap = BitmapFactory.decodeFile(f.getAbsolutePath(),
+                        bitmapOptions);
+
+                imageHolder.setImageBitmap(bitmap);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+
             final ProgressDialog dialog = ProgressDialog.show( MainActivity.this, "Loading ...", "Converting to text.", true, false);
             apiKey = "cHcJqVV3WG";
             langCode = "en";
@@ -88,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
                             if (apiClient.getResponseCode() == RESPONSE_OK) {
                                 alert.setTitle("Success");
                             } else {
-                                alert.setTitle("Faild");
+                                alert.setTitle("Failed");
                             }
 
                             alert.show();
