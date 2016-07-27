@@ -1,28 +1,31 @@
 package com.bankbazaar.teamplayer;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.Uri;
+import android.graphics.Bitmap;
+import android.graphics.Camera;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.v4.content.FileProvider;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
+import android.widget.ImageView;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
-    private String mCurrentPhotoPath;
+public class MainActivity extends AppCompatActivity {
+
+    private ImageView imageHolder;
+    private final int requestCode = 20;
     private String apiKey;
     private String langCode;
     private final int RESPONSE_OK = 200;
@@ -31,76 +34,34 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Button button = (Button) findViewById(R.id.capture_button);
-        assert button != null;
-        button.setOnClickListener(this);
-//        dispatchTakePictureIntent();
-    }
 
-    static final int REQUEST_IMAGE_CAPTURE = 1;
-
-    private void dispatchTakePictureIntent() {
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
-        File photoFile = null;
-        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-            try {
-                photoFile = createImageFile();
-            } catch (IOException ignore) {
-                Toast toast = Toast.makeText(this, "There was a problem saving the photo...", Toast.LENGTH_SHORT);
-                toast.show();
+        imageHolder = (ImageView)findViewById(R.id.captured_photo);
+        Button capturedImageButton = (Button)findViewById(R.id.photo_button);
+        capturedImageButton.setOnClickListener( new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent photoCaptureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                photoCaptureIntent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY,1);
+                startActivityForResult(photoCaptureIntent, requestCode);
             }
-            if (photoFile != null) {
-                Uri photoURI = FileProvider.getUriForFile(this,
-                        "com.bankbazaar.teamplayer.fileprovider",
-                        photoFile);
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-
-            }
-        }
+        });
     }
 
     @Override
-    public void onClick(View view) {
-        dispatchTakePictureIntent();
-    }
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(this.requestCode == requestCode && resultCode == RESULT_OK){
+            Bitmap bitmap = (Bitmap)data.getExtras().get("data");
 
-    protected File createImageFile() throws IOException {
-        // Create an image file name
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "JPEG_" + timeStamp + "_";
-        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        File image = File.createTempFile(
-                imageFileName,  /* prefix */
-                ".jpg",         /* suffix */
-                storageDir      /* directory */
-        );
+            String partFilename = currentDateFormat();
+            storeCameraPhotoInSDCard(bitmap, partFilename);
 
-        // Save a file: path for use with ACTION_VIEW intents
-        mCurrentPhotoPath = "file:" + image.getAbsolutePath();
-        return image;
-    }
-
-    protected File addPhotoToGallery() {
-        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-        File f = new File(mCurrentPhotoPath);
-        Uri contentUri = Uri.fromFile(f);
-        mediaScanIntent.setData(contentUri);
-        this.sendBroadcast(mediaScanIntent);
-        return f;
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-
-        if (requestCode == REQUEST_IMAGE_CAPTURE /*&& resultCode == Activity.RESULT_OK*/) {
-
+            // display the image from SD Card to ImageView Control
+            String storeFilename = "photo_" + partFilename + ".jpg";
+            final File file = getImageFileFromSDCard(storeFilename);
+            final ProgressDialog dialog = ProgressDialog.show( MainActivity.this, "Loading ...", "Converting to text.", true, false);
             apiKey = "cHcJqVV3WG";
             langCode = "en";
-            final File file = addPhotoToGallery();
-
-            final ProgressDialog dialog = ProgressDialog.show( MainActivity.this, "Loading ...", "Converting to text.", true, false);
             final Thread thread = new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -136,10 +97,33 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
             });
             thread.start();
-
-        } else {
-            Toast.makeText(this, "Image Capture Failed", Toast.LENGTH_SHORT)
-                    .show();
         }
     }
+
+    private String currentDateFormat(){
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd_HH_mm_ss");
+        String  currentTimeStamp = dateFormat.format(new Date());
+        return currentTimeStamp;
+    }
+
+    private void storeCameraPhotoInSDCard(Bitmap bitmap, String currentDate){
+        File outputFile = new File(Environment.getExternalStorageDirectory(), "photo_" + currentDate + ".jpg");
+        try {
+            FileOutputStream fileOutputStream = new FileOutputStream(outputFile);
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream);
+            fileOutputStream.flush();
+            fileOutputStream.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    private File getImageFileFromSDCard(String filename){
+        Bitmap bitmap = null;
+//        File imageFile = new File(Environment.getExternalStorageDirectory() + "/" + filename);
+        File imageFile = new File("/sdcard/WhatsApp/Media/WhatsApp Images/IMG-20160720-WA0005.jpg");
+        return imageFile;
+    }
+
 }

@@ -26,7 +26,7 @@
         jar="/home/karan/AndroidStudioProjects/DAM/app/build/intermediates/incremental-runtime-classes/debug/instant-run.jar"
         jumboMode="true"
         revision="23.0.3"
-        sha1="c5ffc17fda38910ee7a7eae054a534e49f8fdf52">
+        sha1="cea01963643400184963ec0cf2098211d1a8719f">
         <dex dex="/home/karan/AndroidStudioProjects/DAM/app/build/intermediates/pre-dexed/debug/instant-run_404a00f6d578d69ad6a556803c8b77fd53b75a6a.jar" />
     </item>
     <item
@@ -40,15 +40,8 @@
         jar="/home/karan/AndroidStudioProjects/DAM/app/build/intermediates/incremental-classes/debug/instant-run-bootstrap.jar"
         jumboMode="true"
         revision="23.0.3"
-        sha1="3c2f7a31ebf3d5b45d32705a6f9b6446c59bf069">
+        sha1="2ff0c118e3fbab6addf9b9fd8e019944ef8f04bf">
         <dex dex="/home/karan/AndroidStudioProjects/DAM/app/build/intermediates/pre-dexed/debug/instant-run-bootstrap_e117b4fde27f6bdc39e32bc41ce8221eca480510.jar" />
-    </item>
-    <item
-        jar="/home/karan/AndroidStudioProjects/DAM/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.4.0/jars/classes.jar"
-        jumboMode="true"
-        revision="23.0.3"
-        sha1="548f06de403a9409f00554b3ee12a9fdea0e236c">
-        <dex dex="/home/karan/AndroidStudioProjects/DAM/app/build/intermediates/pre-dexed/debug/com.android.support-appcompat-v7-23.4.0_f0b1cbc55d1d1803e315c8d10dfac5ee38ae831c.jar" />
     </item>
     <item
         jar="/home/karan/Android/Sdk/extras/android/m2repository/com/android/support/support-annotations/23.4.0/support-annotations-23.4.0.jar"
@@ -56,6 +49,13 @@
         revision="23.0.3"
         sha1="ffbe55fdb2bb456b1485831706a9eac3300bb6b8">
         <dex dex="/home/karan/AndroidStudioProjects/DAM/app/build/intermediates/pre-dexed/debug/support-annotations-23.4.0_fcbe84804a836b29229fb08a8b0f59be84dbdf06.jar" />
+    </item>
+    <item
+        jar="/home/karan/AndroidStudioProjects/DAM/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.4.0/jars/classes.jar"
+        jumboMode="true"
+        revision="23.0.3"
+        sha1="548f06de403a9409f00554b3ee12a9fdea0e236c">
+        <dex dex="/home/karan/AndroidStudioProjects/DAM/app/build/intermediates/pre-dexed/debug/com.android.support-appcompat-v7-23.4.0_f0b1cbc55d1d1803e315c8d10dfac5ee38ae831c.jar" />
     </item>
 
 </items>
